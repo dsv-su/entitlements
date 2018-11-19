@@ -1,0 +1,17 @@
+[general]
+entitlement_base = urn:mace:swami.se:gmai:
+
+[entitlementAPI]
+url         = https://sukatproxy-prod.it.su.se/v1/entitlements/
+principal   = dsv-daisy@SU.SE
+keytab      = dsv-daisy/keytab
+
+[daisyAPI]
+url         = https://api.dsv.su.se/rest/
+user        = USER
+password    = PASSWORD
+
+[ldap]
+url         = ldaps://ldap.su.se/
+user	    = uid=USER,dc=dsv,dc=su,dc=se
+password    = PASSWORD
