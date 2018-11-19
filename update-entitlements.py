@@ -11,27 +11,49 @@ from handlers.LdapHandler import LdapHandler
 from handlers.EntitlementHandler import EntitlementHandler, EntitlementException
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
+
+mainhelp = 'Update entitlements in SUKAT according to a mapping file.'
+parser = argparse.ArgumentParser(description=mainhelp)
+maphelp = "Read entitlement mappings from this file. If omitted, mappings will be read from entmap.conf."
+parser.add_argument('--mapfile',
+                    default='entmap.conf',
+                    help=maphelp)
+parser.add_argument('--dry-run',
+                    action='store_true',
+                    help="Don't make any changes, only print what would be done.")
+group = parser.add_mutually_exclusive_group()
+group.add_argument('--only-add',
+                   action='store_true',
+                   help="Only add entitlements, don't remove any.")
+group.add_argument('--only-remove',
+                   action='store_true',
+                   help="Only remove entitlements, don't add any.")
+args = parser.parse_args()
+
+print('Setting up...', end='', flush=True)
 config = configparser.ConfigParser()
 config.read(scriptpath + '/config.ini')
 config['ldap']['entbase'] = config['general']['entitlement_base']
 config['entitlementAPI']['entbase'] = config['general']['entitlement_base']
 config['entitlementAPI']['cachefile'] = scriptpath + '/ent-cache'
 
-print('Setting up...', end='', flush=True)
 ldap = LdapHandler(config['ldap'])
 daisy = DaisyHandler(config['daisyAPI'])
 api = EntitlementHandler(config['entitlementAPI'])
 print('done.')
 
 print('Reading entitlement map...', end='', flush=True)
+mapfile = args.mapfile
+if not mapfile.startswith('/'):
+    mapfile = '{}/{}'.format(scriptpath, mapfile)
 entmappings = {}
-with open(scriptpath + '/entmap.conf', 'r') as entmap:
+with open(mapfile, 'r') as entmap:
     for line in entmap:
-        temp = re.sub('([ \n]+|#.*)', '', line)
-        if not temp:
+        stripped = re.sub('([ \n]+|#.*)', '', line)
+        if not stripped:
             continue
-        entitlement, definition = temp.split('=', 1)
-        handler, query = definition.split(':', 1)
+        entitlement, _, definition = stripped.partition('=')
+        handler, _, query = definition.partition(':')
         if entitlement not in entmappings:
             entmappings[entitlement] = []
         entmappings[entitlement].append((handler,query))
@@ -67,6 +89,8 @@ with api.open() as sukat:
                 temp_set = set(daisy.search(query))
             elif handler == 'user':
                 temp_set = set([query])
+            elif handler == 'none':
+                temp_set = set()
             else:
                 raise Exception('Unknown handler: {}'.format(handler))
             expected_users.update(temp_set)
@@ -74,19 +98,31 @@ with api.open() as sukat:
         print('  Found {} users.'.format(len(expected_users)))
         users_to_add = expected_users - entitled_users
         users_to_remove = entitled_users - expected_users
-        print('  Updating values: {} to add, {} to remove...'.format(
-            len(users_to_add),
-            len(users_to_remove)), end='', flush=True)
-        for user in users_to_add:
-            success = sukat.add(entitlement, user)
-            if not success:
-                update_failed(entitlement, 'add', user)
-        for user in users_to_remove:
-            success = sukat.remove(entitlement, user)
-            if not success:
-                update_failed(entitlement, 'remove', user)
-        print('done.')
-        
+        if users_to_add:
+            if not args.only_remove:
+                print('  Adding {} users...'.format(
+                    len(users_to_add)), end='', flush=True)
+                if not args.dry_run:
+                    for user in users_to_add:
+                        success = sukat.add(entitlement, user)
+                        if not success:
+                            update_failed(entitlement, 'add', user)
+                print('done.')
+        else:
+            print('  No users to add.')
+        if users_to_remove:
+            if not args.only_add:
+                print('  Removing {} users...'.format(
+                    len(users_to_remove)), end='', flush=True)
+                if not args.dry_run:
+                    for user in users_to_remove:
+                        success = sukat.remove(entitlement, user)
+                        if not success:
+                            update_failed(entitlement, 'remove', user)
+            print('done.')
+        else:
+            print('  No users to remove.')
+
 if failed:
     print('')
     print('Problems were encountered with the following actions:')
