@@ -4,3 +4,5 @@ __pycache__/
 dsv-daisy/
 config.ini
 entmap.conf
+temp*
+ent-cache
