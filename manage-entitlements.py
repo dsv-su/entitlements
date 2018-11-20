@@ -13,6 +13,9 @@ config = configparser.ConfigParser()
 config.read(scriptpath + '/config.ini')
 config['entitlementAPI']['entbase'] = config['general']['entitlement_base']
 config['entitlementAPI']['cachefile'] = scriptpath + '/ent-cache'
+keytab = config['entitlementAPI']['keytab']
+if not keytab.startswith('/'):
+    config['entitlementAPI']['keytab'] = '{}/{}'.format(scriptpath, keytab)
 
 parser = argparse.ArgumentParser(description='Manage entitlements in SUKAT')
 userhelp = "The user(s) to be acted upon. If no users given, read users from stdin."

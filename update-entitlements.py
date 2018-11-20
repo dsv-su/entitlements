@@ -36,6 +36,9 @@ config.read(scriptpath + '/config.ini')
 config['ldap']['entbase'] = config['general']['entitlement_base']
 config['entitlementAPI']['entbase'] = config['general']['entitlement_base']
 config['entitlementAPI']['cachefile'] = scriptpath + '/ent-cache'
+keytab = config['entitlementAPI']['keytab']
+if not keytab.startswith('/'):
+    config['entitlementAPI']['keytab'] = '{}/{}'.format(scriptpath, keytab)
 
 ldap = LdapHandler(config['ldap'])
 daisy = DaisyHandler(config['daisyAPI'])
@@ -49,7 +52,7 @@ if not mapfile.startswith('/'):
 entmappings = {}
 with open(mapfile, 'r') as entmap:
     for line in entmap:
-        stripped = re.sub('([ \n]+|#.*)', '', line)
+        stripped = re.sub('(\s+|#.*)', '', line)
         if not stripped:
             continue
         entitlement, _, definition = stripped.partition('=')
