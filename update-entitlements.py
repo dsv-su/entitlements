@@ -98,28 +98,34 @@ with api.open() as sukat:
         print('  Found {} users.'.format(len(expected_users)))
         users_to_add = expected_users - entitled_users
         users_to_remove = entitled_users - expected_users
-        if users_to_add:
+        num_to_add = len(users_to_add)
+        num_to_remove = len(users_to_remove)
+        if num_to_add:
             if not args.only_remove:
-                print('  Adding {} users...'.format(
-                    len(users_to_add)), end='', flush=True)
+                print('  Adding {} users...'.format(num_to_add),
+                      end='', flush=True)
                 if not args.dry_run:
                     for user in users_to_add:
                         success = sukat.add(entitlement, user)
                         if not success:
                             update_failed(entitlement, 'add', user)
                 print('done.')
+            else:
+                print('  {} users can be added.'.format(num_to_add))
         else:
             print('  No users to add.')
-        if users_to_remove:
+        if num_to_remove:
             if not args.only_add:
-                print('  Removing {} users...'.format(
-                    len(users_to_remove)), end='', flush=True)
+                print('  Removing {} users...'.format(num_to_remove),
+                      end='', flush=True)
                 if not args.dry_run:
                     for user in users_to_remove:
                         success = sukat.remove(entitlement, user)
                         if not success:
                             update_failed(entitlement, 'remove', user)
-            print('done.')
+                print('done.')
+            else:
+                print('  {} users can be removed.'.format(num_to_remove))
         else:
             print('  No users to remove.')
 
@@ -129,6 +135,6 @@ if failed:
     for entitlement, actions in failed.items():
         for action, users in actions.items():
             for user in users:
-                print('{} {} {}'.format(user, action, entitlement))
+                print('{} {} {}'.format(entitlement, action, user))
     exit(1)
 exit(0)
