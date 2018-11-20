@@ -1,25 +1,10 @@
 dsv-user:staff              = ldap:(memberOf=cn=dsv-staff,dc=dsv,dc=su,dc=se)
 dsv-user:student            = daisy:students
+dsv-user:student	    = user:tdsv
 
 dsv-user:play:sprak-staff   = ldap:(memberOf=cn=english-staff,dc=english,dc=su,dc=se)
 dsv-user:play:sprak-staff   = ldap:(memberOf=cn=philosophy-staff,dc=philosophy,dc=su,dc=se)
 dsv-user:play:sprak-staff   = ldap:(memberOf=cn=historia-staff,dc=historia,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=archaeology-staff,dc=archaeology,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=orient-staff,dc=orient,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=erg-staff,dc=erg,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=hsd-staff,dc=hsd,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=ike-staff,dc=ike,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=ling-staff,dc=ling,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=ims-staff,dc=ims,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=slabafinety-staff,dc=slabafinety,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=isd-staff,dc=isd,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=svefler-staff,dc=svefler,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=romklass-staff,dc=romklass,dc=su,dc=se)
 
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US150,ou=Department,ou=Ladok,dc=su,dc=se)
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US172,ou=Department,ou=Ladok,dc=su,dc=se)
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US153,ou=Department,ou=Ladok,dc=su,dc=se)
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US158,ou=Department,ou=Ladok,dc=su,dc=se)
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US161,ou=Department,ou=Ladok,dc=su,dc=se)
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US154,ou=Department,ou=Ladok,dc=su,dc=se)
-dsv-user:play:sprak-student = ldap:(memberOf=cn=US165,ou=Department,ou=Ladok,dc=su,dc=se)
+# Nobody should have this:
+dsv-user:old-entitlement    = none
