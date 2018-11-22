@@ -20,9 +20,9 @@ if not keytab.startswith('/'):
 
 parser = argparse.ArgumentParser(description='Manage entitlements in SUKAT')
 userhelp = "The user(s) to be acted upon. If no users given, read users from stdin."
-addhelp = "Add one or more entitlements to the given user(s)."
-delhelp = "Delete one or more entitlements from the given users(s)."
-maphelp = "Don't update the entitlement map file to reflect the requested changes."
+addhelp = "Add one or more entitlements to the given user(s). Can be specified multiple times."
+delhelp = "Delete one or more entitlements from the given users(s). Can be specified multiple times."
+maphelp = "Don't update entmap.conf to reflect the changes made."
 
 parser.add_argument('user',
                     nargs='*',

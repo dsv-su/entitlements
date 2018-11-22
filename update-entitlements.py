@@ -12,7 +12,7 @@ from handlers.EntmapHandler import EntmapHandler
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 
-mainhelp = 'Update entitlements in SUKAT according to a mapping file.'
+mainhelp = 'Update entitlements in SUKAT according to entmap.conf.'
 parser = argparse.ArgumentParser(description=mainhelp)
 parser.add_argument('--dry-run',
                     action='store_true',
