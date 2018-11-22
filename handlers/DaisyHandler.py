@@ -12,10 +12,10 @@ class DaisyHandler:
         else:
             raise Exception('Invalid argument: {}'.format(query))
 
-    def getSemesterStudents(self, semester, distance=False):
+    def getSemesterStudents(self, semester):
         params = {'department': 4,
                   'realm': 'SU.SE',
-                  'offCampusCourses': distance,
+                  'includeReregs': True,
                   'semester': semester}
         requestpath = '{}/student/registeredStudents'.format(self.url)
         r = requests.get(requestpath, params=params, auth=self.auth)
@@ -40,5 +40,4 @@ class DaisyHandler:
         active_students = set()
         for semester in valid_semesters:
             active_students.update(self.getSemesterStudents(semester))
-            active_students.update(self.getSemesterStudents(semester, distance=True))
         return active_students
