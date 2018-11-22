@@ -1,5 +1,6 @@
 [general]
 entitlement_base = urn:mace:swami.se:gmai:
+entitlement_map  = entmap.conf
 
 [entitlementAPI]
 url         = https://sukatproxy-prod.it.su.se/v1/entitlements/
