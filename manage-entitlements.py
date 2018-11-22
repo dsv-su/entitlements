@@ -7,6 +7,7 @@ import argparse
 import sys
 
 from handlers.EntitlementHandler import EntitlementHandler, EntitlementException
+from handlers.EntmapHandler import EntmapHandler
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 config = configparser.ConfigParser()
@@ -21,21 +22,25 @@ parser = argparse.ArgumentParser(description='Manage entitlements in SUKAT')
 userhelp = "The user(s) to be acted upon. If no users given, read users from stdin."
 addhelp = "Add one or more entitlements to the given user(s)."
 delhelp = "Delete one or more entitlements from the given users(s)."
+maphelp = "Don't update the entitlement map file to reflect the requested changes."
 
 parser.add_argument('user',
                     nargs='*',
                     metavar='<username>',
                     help=userhelp)
-parser.add_argument('--add',
+parser.add_argument('--add, -a',
                     action='append',
                     nargs='*',
                     metavar='<entitlement>',
                     help=addhelp)
-parser.add_argument('--remove',
+parser.add_argument('--remove, -r',
                     action='append',
                     nargs='*',
                     metavar='<entitlement>',
                     help=delhelp)
+parser.add_argument('--no-entmap-update',
+                    action='store_true',
+                    help=maphelp)
 args = parser.parse_args()  
 
 def flatten(l):
@@ -57,7 +62,8 @@ toadd = flatten(args.add)
 todel = flatten(args.remove)
 
 api = EntitlementHandler(config['entitlementAPI'])
-with api.open() as sukat:
+maphandler = EntmapHandler(config['general']['entitlement_map'])
+with api.open() as sukat, maphandler.open() as entmap:
     for user in users:
         if not toadd and not todel:
             print('No actions specified.')
@@ -66,7 +72,13 @@ with api.open() as sukat:
             success = sukat.remove(ent, user)
             if not success:
                 print('Failed: remove {} from {}'.format(ent, user))
+            else:
+                if not args.no_entmap_update:
+                    entmap.remove(ent, user)
         for ent in toadd:
             success = sukat.add(ent, user)
             if not success:
                 print('Failed: add {} to {}'.format(ent, user))
+            else:
+                if not args.no_entmap_update:
+                    entmap.add(ent, user)

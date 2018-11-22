@@ -4,20 +4,16 @@ from inspect import getsourcefile
 from os.path import dirname, realpath, abspath
 import configparser
 import argparse
-import re
 
 from handlers.DaisyHandler import DaisyHandler
 from handlers.LdapHandler import LdapHandler
 from handlers.EntitlementHandler import EntitlementHandler, EntitlementException
+from handlers.EntmapHandler import EntmapHandler
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 
 mainhelp = 'Update entitlements in SUKAT according to a mapping file.'
 parser = argparse.ArgumentParser(description=mainhelp)
-maphelp = "Read entitlement mappings from this file. If omitted, mappings will be read from entmap.conf."
-parser.add_argument('--mapfile',
-                    default='entmap.conf',
-                    help=maphelp)
 parser.add_argument('--dry-run',
                     action='store_true',
                     help="Don't make any changes, only print what would be done.")
@@ -29,6 +25,9 @@ group.add_argument('--only-remove',
                    action='store_true',
                    help="Only remove entitlements, don't add any.")
 args = parser.parse_args()
+
+if args.dry_run:
+    print('Dry run requested. No changes will actually be applied.')
 
 print('Setting up...', end='', flush=True)
 config = configparser.ConfigParser()
@@ -46,20 +45,11 @@ api = EntitlementHandler(config['entitlementAPI'])
 print('done.')
 
 print('Reading entitlement map...', end='', flush=True)
-mapfile = args.mapfile
+mapfile = config['general']['entitlement_map']
 if not mapfile.startswith('/'):
     mapfile = '{}/{}'.format(scriptpath, mapfile)
-entmappings = {}
-with open(mapfile, 'r') as entmap:
-    for line in entmap:
-        stripped = re.sub('(\s+|#.*)', '', line)
-        if not stripped:
-            continue
-        entitlement, _, definition = stripped.partition('=')
-        handler, _, query = definition.partition(':')
-        if entitlement not in entmappings:
-            entmappings[entitlement] = []
-        entmappings[entitlement].append((handler,query))
+entmaphandler = EntmapHandler(mapfile)
+entmappings = entmaphandler.read()
 print('done.')
 
 failed = {}
