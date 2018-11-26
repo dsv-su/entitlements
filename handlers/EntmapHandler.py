@@ -52,10 +52,9 @@ class FileHandler:
                 longest = len(ent)
         out = []
         for line, ent, handler, query in entmaplines:
-            if   (ent in self.removemap
-                  and query in self.removemap[ent]):
+            if ent in self.removemap and query in self.removemap[ent]:
                 continue
-            elif (ent in self.addmap):
+            elif ent in self.addmap:
                 for user in self.addmap[ent]:
                     out.append(_format_line(ent.ljust(longest),
                                             'user',
