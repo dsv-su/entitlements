@@ -2,8 +2,9 @@
 
 from inspect import getsourcefile
 from os.path import dirname, realpath, abspath
-import configparser
 import argparse
+from enum import Enum
+import configparser
 
 from handlers.DaisyHandler import DaisyHandler
 from handlers.LdapHandler import LdapHandler
@@ -17,6 +18,9 @@ parser = argparse.ArgumentParser(description=mainhelp)
 parser.add_argument('--dry-run',
                     action='store_true',
                     help="Don't make any changes, only print what would be done.")
+parser.add_argument('--debug',
+                    action='store_true',
+                    help="Show extra output for debug purposes.")
 group = parser.add_mutually_exclusive_group()
 group.add_argument('--only-add',
                    action='store_true',
@@ -26,10 +30,26 @@ group.add_argument('--only-remove',
                    help="Only remove entitlements, don't add any.")
 args = parser.parse_args()
 
-if args.dry_run:
-    print('Dry run requested. No changes will actually be applied.')
+class Msglevel(Enum):
+    ERROR, INFO, DEBUG = range(3)
+    
+def show(message, message_level=Msglevel.INFO, linefeed=True):
+    args = {}
+    if(not linefeed):
+        args['end'] = ''
+        args['flush'] = True
+    if(info_level.value >= message_level.value):
+        print(message, **args)
 
-print('Setting up...', end='', flush=True)
+info_level = Msglevel.INFO
+if args.debug:
+    info_level = Msglevel.DEBUG
+    
+if args.dry_run:
+    show('Dry run requested. No changes will actually be applied.',
+         Msglevel.INFO)
+
+show('Setting up...', Msglevel.DEBUG, linefeed=False)
 config = configparser.ConfigParser()
 config.read(scriptpath + '/config.ini')
 config['ldap']['entbase'] = config['general']['entitlement_base']
@@ -42,15 +62,15 @@ if not keytab.startswith('/'):
 ldap = LdapHandler(config['ldap'])
 daisy = DaisyHandler(config['daisyAPI'])
 api = EntitlementHandler(config['entitlementAPI'])
-print('done.')
+show('done.', Msglevel.DEBUG)
 
-print('Reading entitlement map...', end='', flush=True)
+show('Reading entitlement map...', Msglevel.DEBUG, linefeed=False)
 mapfile = config['general']['entitlement_map']
 if not mapfile.startswith('/'):
     mapfile = '{}/{}'.format(scriptpath, mapfile)
 entmaphandler = EntmapHandler(mapfile)
 entmappings = entmaphandler.read()
-print('done.')
+show('done.', Msglevel.DEBUG)
 
 failed = {}
 def update_failed(entitlement, action, user):
@@ -60,19 +80,18 @@ def update_failed(entitlement, action, user):
         failed[entitlement][action] = []
     failed[entitlement][action].append(user)
 
-print('Updating entitlements:')
+show('Updating entitlements:', Msglevel.DEBUG)
 with api.open() as sukat:
-    for entitlement, definitions in entmappings.items():
-        print(' Updating {}:'.format(entitlement))
-        print('  Getting list of current members...',
-              end='',
-              flush=True)
+    for entitlement, definitions in sorted(entmappings.items()):
+        show(' Updating {}:'.format(entitlement))
+        show('  Getting list of current members...',
+             Msglevel.DEBUG, linefeed=False)
         entitled_users = set(ldap.getEntitledUsers(entitlement))
-        print('done.')
-        print('  Found {} members.'.format(len(entitled_users)))
-        print('  Getting list of expected members...',
-              end='',
-              flush=True)
+        show('done.', Msglevel.DEBUG)
+        show('  Found {} members.'.format(len(entitled_users)),
+             Msglevel.DEBUG)
+        show('  Getting list of expected members...',
+             Msglevel.DEBUG, linefeed=False)
         expected_users = set()
         for (handler, query) in definitions:
             temp_set = None
@@ -87,47 +106,50 @@ with api.open() as sukat:
             else:
                 raise Exception('Unknown handler: {}'.format(handler))
             expected_users.update(temp_set)
-        print('done.')
-        print('  Found {} users.'.format(len(expected_users)))
+        show('done.', Msglevel.DEBUG)
+        show('  Found {} users.'.format(len(expected_users)),
+             Msglevel.DEBUG)
         users_to_add = expected_users - entitled_users
         users_to_remove = entitled_users - expected_users
         num_to_add = len(users_to_add)
         num_to_remove = len(users_to_remove)
         if num_to_add:
             if not args.only_remove:
-                print('  Adding {} users...'.format(num_to_add),
-                      end='', flush=True)
+                show('  Adding {} users...'.format(num_to_add),
+                     linefeed=False)
                 if not args.dry_run:
                     for user in users_to_add:
                         success = sukat.add(entitlement, user)
                         if not success:
                             update_failed(entitlement, 'add', user)
-                print('done.')
+                show('done.')
             else:
-                print('  {} users can be added.'.format(num_to_add))
+                show('  {} users can be added.'.format(num_to_add))
         else:
-            print('  No users to add.')
+            show('  No users to add.')
         if num_to_remove:
             if not args.only_add:
-                print('  Removing {} users...'.format(num_to_remove),
-                      end='', flush=True)
+                show('  Removing {} users...'.format(num_to_remove),
+                     linefeed=False)
                 if not args.dry_run:
                     for user in users_to_remove:
                         success = sukat.remove(entitlement, user)
                         if not success:
                             update_failed(entitlement, 'remove', user)
-                print('done.')
+                show('done.')
             else:
-                print('  {} users can be removed.'.format(num_to_remove))
+                show('  {} users can be removed.'.format(num_to_remove))
         else:
-            print('  No users to remove.')
+            show('  No users to remove.')
 
 if failed:
-    print('')
-    print('Problems were encountered with the following actions:')
+    show('', msglevel.ERROR)
+    show('Problems were encountered with the following actions:',
+         Msglevel.ERROR)
     for entitlement, actions in failed.items():
         for action, users in actions.items():
             for user in users:
-                print('{} {} {}'.format(entitlement, action, user))
+                show('{} {} {}'.format(entitlement, action, user),
+                     Msglevel.ERROR)
     exit(1)
 exit(0)
