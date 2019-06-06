@@ -143,7 +143,7 @@ with api.open() as sukat:
             show('  No users to remove.')
 
 if failed:
-    show('', msglevel.ERROR)
+    show('', Msglevel.ERROR)
     show('Problems were encountered with the following actions:',
          Msglevel.ERROR)
     for entitlement, actions in failed.items():
