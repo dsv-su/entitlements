@@ -28,6 +28,11 @@ group.add_argument('--only-add',
 group.add_argument('--only-remove',
                    action='store_true',
                    help="Only remove entitlements, don't add any.")
+parser.add_argument('entitlements',
+                    nargs='*',
+                    metavar='<entitlement>',
+                    help="If present, only act on these entitlements. \
+                    If not present, act on all entitlements.")
 args = parser.parse_args()
 
 class Msglevel(Enum):
@@ -69,7 +74,7 @@ mapfile = config['general']['entitlement_map']
 if not mapfile.startswith('/'):
     mapfile = '{}/{}'.format(scriptpath, mapfile)
 entmaphandler = EntmapHandler(mapfile)
-entmappings = entmaphandler.read()
+entmappings = entmaphandler.read(args.entitlements)
 show('done.', Msglevel.DEBUG)
 
 failed = {}

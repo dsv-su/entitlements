@@ -1,7 +1,7 @@
 *~
 __pycache__/
 *.py[cod]
-dsv-daisy/
+keytabs/
 config.ini
 entmap.conf
 temp*

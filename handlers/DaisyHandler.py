@@ -4,26 +4,37 @@ from datetime import datetime
 class DaisyHandler:
     def __init__(self, config):
         self.auth = (config['user'], config['password'])
+        self.headers = {'Accept': 'application/json'}
         self.url = config['url'].rstrip('/')
+
+    def _get(self, path, params={}):
+        requestpath = '{}{}'.format(self.url, path)
+        r = requests.get(requestpath,
+                         params,
+                         headers=self.headers,
+                         auth=self.auth)
+        if not r.status_code == 200:
+            raise Exception('Got bad response from Daisy API: {}'
+                            .format(r.status_code))
+        return r.json()
 
     def search(self, query):
         if query == 'students':
-            return self.getCurrentStudents()
+            return self._getCurrentStudents()
+        elif query.startswith('course:'):
+            _, _, course = query.partition(':')
+            return self._getCourseParticipants(course)
         else:
             raise Exception('Invalid argument: {}'.format(query))
 
-    def getSemesterStudents(self, semester):
+    def _getSemesterStudents(self, semester):
         params = {'department': 4,
                   'realm': 'SU.SE',
                   'includeReregs': True,
                   'semester': semester}
-        requestpath = '{}/student/registeredStudents'.format(self.url)
-        r = requests.get(requestpath, params=params, auth=self.auth)
-        if r.status_code == 200:
-            return r.json()
-        return False
+        return self._get('/student/registeredStudents', params=params)
 
-    def getCurrentStudents(self):
+    def _getCurrentStudents(self):
         now = datetime.now()
         year = now.year
         term = 1
@@ -39,5 +50,18 @@ class DaisyHandler:
                 term = 2
         active_students = set()
         for semester in valid_semesters:
-            active_students.update(self.getSemesterStudents(semester))
+            active_students.update(self._getSemesterStudents(semester))
         return active_students
+
+    def _getCourseParticipants(self, courseId):
+        requestpath = '/courseSegment/{}/participants'.format(courseId)
+        json = self._get(requestpath)
+        userids = set([item['person']['id'] for item in json])
+        users = [self._get('/person/{}/usernames'.format(userid))
+                 for userid in userids]
+        usernames = set()
+        for user in users:
+            for identity in user:
+                if identity['realm'] == 'SU.SE':
+                    usernames.add(identity['username'])
+        return usernames

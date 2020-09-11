@@ -10,16 +10,17 @@ class EntmapHandler:
     def open(self):
         return self.filehandler
 
-    def read(self):
+    def read(self, entitlements=None):
         entmappings = {}
         with open(self.mapfile, 'r') as mapfile:
             for line in mapfile:
                 entitlement, handler, query = _parse_line(line)
                 if not entitlement:
                     continue
-                if entitlement not in entmappings:
-                    entmappings[entitlement] = []
-                entmappings[entitlement].append((handler,query))
+                if not entitlements or entitlement in entitlements:
+                    if entitlement not in entmappings:
+                        entmappings[entitlement] = []
+                    entmappings[entitlement].append((handler,query))
         return entmappings
 
 class FileHandler:
