@@ -55,13 +55,6 @@ class DaisyHandler:
 
     def _getCourseParticipants(self, courseId):
         requestpath = '/courseSegment/{}/participants'.format(courseId)
-        json = self._get(requestpath)
-        userids = set([item['person']['id'] for item in json])
-        users = [self._get('/person/{}/usernames'.format(userid))
-                 for userid in userids]
-        usernames = set()
-        for user in users:
-            for identity in user:
-                if identity['realm'] == 'SU.SE':
-                    usernames.add(identity['username'])
+        json = self._get(requestpath, params={'realm':'SU.SE'})
+        usernames = set([item['userName'] for item in json])
         return usernames
