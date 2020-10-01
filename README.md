@@ -95,9 +95,9 @@ There are four handlers:
  * ```ldap``` - Takes an LDAP search string as a query. The query should result in a 
  list of users who will then be granted the given entitlement.
  * ```daisy``` - Accepts two kinds of queries:
-   - ```students```: Will return all students who have had an active registration at DSV
+   - ```students``` - Will return all students who have had an active registration at DSV
   at any time during the last 10 semesters.
-   - ```course:<id>```: Requires a Daisy courseSegment ID as a parameter, and will return 
+   - ```course:<id>``` - Requires a Daisy courseSegment ID as a parameter, and will return 
   all students currently registered on that courseSegment.
  * ```user``` - Accepts a username as a query. The given user will be granted the given 
  entitlement.
