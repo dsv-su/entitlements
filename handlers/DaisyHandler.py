@@ -1,7 +1,8 @@
+from handlers.Handler import Handler
 import requests
 from datetime import datetime
 
-class DaisyHandler:
+class DaisyHandler(Handler):
     def __init__(self, config):
         self.auth = (config['user'], config['password'])
         self.headers = {'Accept': 'application/json'}

@@ -6,10 +6,13 @@ import argparse
 from enum import Enum
 import configparser
 
-from handlers.DaisyHandler import DaisyHandler
 from handlers.LdapHandler import LdapHandler
-from handlers.EntitlementHandler import EntitlementHandler, EntitlementException
-from handlers.EntmapHandler import EntmapHandler
+from handlers.DaisyHandler import DaisyHandler
+from handlers.UserHandler import UserHandler
+from handlers.NoneHandler import NoneHandler
+
+from util.EntitlementHandler import EntitlementHandler, EntitlementException
+from util.EntmapHandler import EntmapHandler
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 
@@ -66,6 +69,8 @@ if not keytab.startswith('/'):
 
 ldap = LdapHandler(config['ldap'])
 daisy = DaisyHandler(config['daisyAPI'])
+user = UserHandler()
+none = NoneHandler()
 api = EntitlementHandler(config['entitlementAPI'])
 show('done.', Msglevel.DEBUG)
 
@@ -105,9 +110,9 @@ with api.open() as sukat:
             elif handler == 'daisy':
                 temp_set = set(daisy.search(query))
             elif handler == 'user':
-                temp_set = set([query])
+                temp_set = set(user.search(query))
             elif handler == 'none':
-                temp_set = set()
+                temp_set = set(none.search(query))
             else:
                 raise Exception('Unknown handler: {}'.format(handler))
             expected_users.update(temp_set)

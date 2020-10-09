@@ -1,6 +1,7 @@
+from handlers.Handler import Handler
 from ldap3 import Server, Connection
 
-class LdapHandler:
+class LdapHandler(Handler):
     def __init__(self, conf):
         self.base = 'dc=su,dc=se'
         self.entbase = conf['entbase']

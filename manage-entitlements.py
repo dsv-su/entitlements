@@ -6,8 +6,8 @@ import configparser
 import argparse
 import sys
 
-from handlers.EntitlementHandler import EntitlementHandler, EntitlementException
-from handlers.EntmapHandler import EntmapHandler
+from util.EntitlementHandler import EntitlementHandler, EntitlementException
+from util.EntmapHandler import EntmapHandler
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 config = configparser.ConfigParser()
