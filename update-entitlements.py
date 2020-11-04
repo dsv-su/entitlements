@@ -127,11 +127,12 @@ with api.open() as sukat:
             if not args.only_remove:
                 show('  Adding {} users...'.format(num_to_add),
                      linefeed=False)
+                show('', Msglevel.DEBUG)
                 if not args.dry_run:
-                    for user in users_to_add:
-                        success = sukat.add(entitlement, user)
-                        if not success:
-                            update_failed(entitlement, 'add', user)
+                    for u in users_to_add:
+                        show('   {}'.format(u), Msglevel.DEBUG)
+                        if not sukat.add(entitlement, u):
+                            update_failed(entitlement, 'add', u)
                 show('done.')
             else:
                 show('  {} users can be added.'.format(num_to_add))
@@ -141,11 +142,12 @@ with api.open() as sukat:
             if not args.only_add:
                 show('  Removing {} users...'.format(num_to_remove),
                      linefeed=False)
+                show('', Msglevel.DEBUG)
                 if not args.dry_run:
-                    for user in users_to_remove:
-                        success = sukat.remove(entitlement, user)
-                        if not success:
-                            update_failed(entitlement, 'remove', user)
+                    for u in users_to_remove:
+                        show('   {}'.format(u), Msglevel.DEBUG)
+                        if not sukat.remove(entitlement, u):
+                            update_failed(entitlement, 'remove', u)
                 show('done.')
             else:
                 show('  {} users can be removed.'.format(num_to_remove))
@@ -158,8 +160,8 @@ if failed:
          Msglevel.ERROR)
     for entitlement, actions in failed.items():
         for action, users in actions.items():
-            for user in users:
-                show('{} {} {}'.format(entitlement, action, user),
+            for u in users:
+                show('{} {} {}'.format(entitlement, action, u),
                      Msglevel.ERROR)
     exit(1)
 exit(0)
