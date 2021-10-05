@@ -29,16 +29,14 @@ class EntitlementHandler:
 
             def __update(self, method, user, entitlement):
                 if not self.active:
-                    raise Exception('This object is not in a usable state for this operation')
+                    raise ValueError('This object is not in a usable state for this operation')
                 path = '{}/{}/{}'.format(self.url,
                                          user,
                                          self.entbase + entitlement)
                 r = self.session.request(method,
                                          path)
-                if r.status_code in range(200, 299):
-                    return True
-                return False
-        
+                r.raise_for_status()
+
             def add(self, entitlement, user):
                 return self.__update('PUT', user, entitlement)
             
@@ -48,19 +46,10 @@ class EntitlementHandler:
             def get(self, user):
                 path = '{}/{}'.format(self.url, user)
                 r = self.session.get(path)
-                if r.status_code in range(200, 299):
-                    return r.json()['entitlements']
-                return False
+                r.raise_for_status()
+                return r.json()['entitlements']
     
         self.requestor = Requestor(conf)
 
     def open(self):
         return self.requestor
-
-class EntitlementException(Exception):
-    def __init__(self, request):
-        self.request = request
-
-    def getRequest(self):
-        return self.request
-    
