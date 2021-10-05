@@ -2,11 +2,11 @@
 
 from inspect import getsourcefile
 from os.path import dirname, realpath, abspath
-import configparser
 import argparse
+import configparser
 import sys
 
-from util.EntitlementHandler import EntitlementHandler, EntitlementException
+from util.EntitlementHandler import EntitlementHandler
 from util.EntmapHandler import EntmapHandler
 
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
