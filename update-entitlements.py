@@ -5,6 +5,7 @@ from os.path import dirname, realpath, abspath
 import argparse
 import configparser
 import logging
+import sys
 
 from handlers.LdapHandler import LdapHandler
 from handlers.DaisyHandler import DaisyHandler
@@ -46,7 +47,7 @@ if args.debug:
     loglevel = 'DEBUG'
 
 log = logging.getLogger(__name__)
-log.addHandler(logging.StreamHandler())
+log.addHandler(logging.StreamHandler(sys.stdout))
 log.setLevel(loglevel)
 
 if args.dry_run:
