@@ -36,6 +36,7 @@ class EntitlementHandler:
                 r = self.session.request(method,
                                          path)
                 r.raise_for_status()
+                return True
 
             def add(self, entitlement, user):
                 return self.__update('PUT', user, entitlement)
