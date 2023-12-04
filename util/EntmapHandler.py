@@ -28,18 +28,18 @@ class FileHandler:
         self.mapfile = mapfile
         self.addmap = {}
         self.removemap = {}
-        
+
     def __enter__(self):
         self.active = True
         return self
-        
+
     def __exit__(self, exc_type, exc_value, traceback):
         self.active = False
         if exc_type is None:
             self._commit()
         else:
             raise exc_value
-        
+
     def _commit(self):
         entmaplines = []
         with open(self.mapfile, 'r') as mapfile:
@@ -72,7 +72,7 @@ class FileHandler:
         with open(self.mapfile, 'w') as mapfile:
             mapfile.write(out)
         return True
-        
+
     def _check_active(self):
         if not self.active:
             raise Exception('This object is not in a usable state for this operation')
@@ -99,4 +99,4 @@ def _parse_line(line):
 
 def _format_line(ent, handler, query):
     return '{} = {}:{}\n'.format(ent, handler, query)
-    
+
