@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(description='Manage entitlements in SUKAT')
 userhelp = "The user(s) to be acted upon. If no users given, read users from stdin."
 addhelp = "Add one or more entitlements to the given user(s). Can be specified multiple times."
 delhelp = "Delete one or more entitlements from the given users(s). Can be specified multiple times."
-maphelp = "Don't update entmap.conf to reflect the changes made."
+maphelp = "Update entmap.conf to reflect the changes made."
 
 parser.add_argument('user',
                     nargs='*',
@@ -38,7 +38,7 @@ parser.add_argument('--remove', '-r',
                     nargs='*',
                     metavar='<entitlement>',
                     help=delhelp)
-parser.add_argument('--no-entmap-update',
+parser.add_argument('--entmap-update',
                     action='store_true',
                     help=maphelp)
 args = parser.parse_args()  
@@ -73,12 +73,12 @@ with api.open() as sukat, maphandler.open() as entmap:
             if not success:
                 print('Failed: remove {} from {}'.format(ent, user))
             else:
-                if not args.no_entmap_update:
+                if args.entmap_update:
                     entmap.remove(ent, user)
         for ent in toadd:
             success = sukat.add(ent, user)
             if not success:
                 print('Failed: add {} to {}'.format(ent, user))
             else:
-                if not args.no_entmap_update:
+                if args.entmap_update:
                     entmap.add(ent, user)
