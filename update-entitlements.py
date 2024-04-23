@@ -139,5 +139,5 @@ if failed:
     log.error('Problems were encountered with the following actions:')
     for (ent, action, user, error) in failed:
         log.error('%s %s %s\n  %s', ent, action, user, error)
-    exit(1)
+    exit(99)
 exit(0)
