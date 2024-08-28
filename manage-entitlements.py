@@ -41,7 +41,7 @@ parser.add_argument('--remove', '-r',
 parser.add_argument('--entmap-update',
                     action='store_true',
                     help=maphelp)
-args = parser.parse_args()  
+args = parser.parse_args()
 
 def flatten(l):
     out=[]
