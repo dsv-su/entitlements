@@ -90,13 +90,13 @@ with api.open() as sukat:
         for (handler, query) in definitions:
             temp_set = None
             if handler == 'ldap':
-                temp_set = set(ldap.search(query))
+                temp_set = ldap.search(query)
             elif handler == 'daisy':
-                temp_set = set(daisy.search(query))
+                temp_set = daisy.search(query)
             elif handler == 'user':
-                temp_set = set(user.search(query))
+                temp_set = user.search(query)
             elif handler == 'none':
-                temp_set = set(none.search(query))
+                temp_set = none.search(query)
             else:
                 raise Exception('Unknown handler: {}'.format(handler))
             expected_users.update(temp_set)

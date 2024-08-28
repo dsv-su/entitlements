@@ -20,11 +20,11 @@ class LdapHandler(Handler):
             self.base,
             query,
             attributes=['uid'])
-        out = []
+        out = set()
         if not result:
             return out
         for item in self.conn.entries:
-            out.append(str(item.uid))
+            out.add(str(item.uid))
         return out
 
     def getEntitledUsers(self, entitlement):
