@@ -91,7 +91,12 @@ with api.open() as sukat:
             log.debug('   Found %s', username)
         log.debug('  Getting list of expected members...')
         expected_users = set()
+        excluded_users = set()
         for (handler, query) in definitions:
+            include = True
+            if handler.startswith('!'):
+                include = False
+                handler = handler[1:]
             temp_set = None
             if handler == 'ldap':
                 temp_set = ldap.search(query)
@@ -105,7 +110,11 @@ with api.open() as sukat:
                 temp_set = none.search(query)
             else:
                 raise Exception('Unknown handler: {}'.format(handler))
-            expected_users.update(temp_set)
+            if include:
+                expected_users.update(temp_set)
+            else:
+                excluded_users.update(temp_set)
+        expected_users = expected_users - excluded_users
         log.debug('  Found %s expected members.', len(expected_users))
         for username in expected_users:
             log.debug('   Expecting %s', username)
