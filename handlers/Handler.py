@@ -1,5 +1,4 @@
 class Handler:
     def search(self, query):
-        # SHould return a set of usernames
+        # Should return a set of usernames
         pass
-    

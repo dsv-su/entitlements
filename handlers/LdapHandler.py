@@ -26,16 +26,8 @@ class LdapHandler(Handler):
         for item in self.conn.entries:
             out.append(str(item.uid))
         return out
-        
+
     def getEntitledUsers(self, entitlement):
         fqe = self.entbase + entitlement
         query = '(eduPersonEntitlement={})'.format(fqe)
-        return self.search(query)
-
-    def getStaff(self):
-        query = '(memberOf=cn=dsv-staff,dc=dsv,dc=su,dc=se)'
-        return self.search(query)
-
-    def getUser(self, uid):
-        query = '(uid={})'.format(uid)
         return self.search(query)
