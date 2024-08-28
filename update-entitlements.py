@@ -85,6 +85,8 @@ with api.open() as sukat:
         log.debug('  Getting list of current members...')
         entitled_users = set(ldap.getEntitledUsers(entitlement))
         log.debug('  Found %s current members.', len(entitled_users))
+        for username in entitled_users:
+            log.debug('   Found %s', username)
         log.debug('  Getting list of expected members...')
         expected_users = set()
         for (handler, query) in definitions:
@@ -101,6 +103,8 @@ with api.open() as sukat:
                 raise Exception('Unknown handler: {}'.format(handler))
             expected_users.update(temp_set)
         log.debug('  Found %s expected members.', len(expected_users))
+        for username in expected_users:
+            log.debug('   Expecting %s', username)
         users_to_add = expected_users - entitled_users
         users_to_remove = entitled_users - expected_users
         num_to_add = len(users_to_add)
@@ -108,13 +112,13 @@ with api.open() as sukat:
         if num_to_add > 0:
             if not args.only_remove:
                 log.info('  Adding %s users...', num_to_add)
-                if not args.dry_run:
-                    for u in users_to_add:
-                        log.debug('   %s', u)
+                for username in users_to_add:
+                    log.debug('   %s', username)
+                    if not args.dry_run:
                         try:
-                            sukat.add(entitlement, u)
+                            sukat.add(entitlement, username)
                         except Exception as e:
-                            failed.append((entitlement, 'add', u, e))
+                            failed.append((entitlement, 'add', username, e))
             else:
                 log.info('  %s users can be added.', num_to_add)
         else:
@@ -122,13 +126,14 @@ with api.open() as sukat:
         if num_to_remove:
             if not args.only_add:
                 log.info('  Removing %s users...', num_to_remove)
-                if not args.dry_run:
-                    for u in users_to_remove:
-                        log.debug('   %s', u)
+                for username in users_to_remove:
+                    log.debug('   %s', username)
+                    if not args.dry_run:
                         try:
-                            sukat.remove(entitlement, u)
+                            sukat.remove(entitlement, username)
                         except Exception as e:
-                            failed.append((entitlement, 'remove', u, e))
+                            failed.append(
+                                (entitlement, 'remove', username, e))
             else:
                 log.info('  %s users can be removed.', num_to_remove)
         else:
@@ -137,7 +142,7 @@ with api.open() as sukat:
 if failed:
     log.error('')
     log.error('Problems were encountered with the following actions:')
-    for (ent, action, user, error) in failed:
-        log.error('%s %s %s\n  %s', ent, action, user, error)
+    for (ent, action, username, error) in failed:
+        log.error('%s %s %s\n  %s', ent, action, username, error)
     exit(99)
 exit(0)
