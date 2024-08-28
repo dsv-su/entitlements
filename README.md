@@ -90,16 +90,20 @@ There is no multiline comment facility.
 All whitespace except newline (```\n```) is ignored. Blank lines are allowed.
 
 Each non-comment should match the following format:
-```entitlement = handler:query```
+```entitlement = [!]handler:query```
 
  * ```entitlement``` - An entitlement. Will be concatenated with the value of
    ```entitlement_base``` in config.ini. The same entitlement may be specified
    several times with different handler/query combinations.
  * ```handler``` - The facility to be used to process ```query```.
-There are four handlers:
  * ```query``` - A handler-dependent description of who should be
    granted the entitlement.
 
+If a handler is prefixed with ```!```, the resulting set of users will be
+excluded from the given entitlement. This exclusion has precedence over all
+inclusion mechanisms.
+
+There are five handlers:
  * ```ldap``` - Takes an LDAP search string as a query. The query should
    result in a list of users who will then be granted the given entitlement.
  * ```daisy``` - Accepts two kinds of queries:
@@ -109,6 +113,8 @@ There are four handlers:
      will return all students currently registered on that courseSegment.
  * ```user``` - Accepts a username as a query. The given user will be granted
    the given entitlement.
+ * ```unixgroup``` - Takes the name of a unix group as a query. All members of
+   the named group will be granted the given entitlement.
  * ```none``` - Does not take a query (the :query part will be ignored
    if it exists). Indicates that no users should have the given entitlement.
    Useful for removing outdated entitlements.

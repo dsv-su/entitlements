@@ -14,5 +14,9 @@ password    = PASSWORD
 
 [ldap]
 url         = ldaps://ldap.su.se/
-user	    = uid=USER,dc=dsv,dc=su,dc=se
+user        = uid=USER,dc=dsv,dc=su,dc=se
 password    = PASSWORD
+
+[unix]
+passwd_file = /some/passwd/file
+group_file  = /some/group/file
