@@ -10,6 +10,7 @@ import sys
 from handlers.LdapHandler import LdapHandler
 from handlers.DaisyHandler import DaisyHandler
 from handlers.UserHandler import UserHandler
+from handlers.UnixHandler import UnixHandler
 from handlers.NoneHandler import NoneHandler
 
 from util.EntitlementHandler import EntitlementHandler
@@ -64,6 +65,7 @@ if not keytab.startswith('/'):
 ldap = LdapHandler(config['ldap'])
 daisy = DaisyHandler(config['daisyAPI'])
 user = UserHandler()
+unix = UnixHandler(config['unix'])
 none = NoneHandler()
 api = EntitlementHandler(config['entitlementAPI'])
 log.debug('Initialization done.')
@@ -97,6 +99,8 @@ with api.open() as sukat:
                 temp_set = daisy.search(query)
             elif handler == 'user':
                 temp_set = user.search(query)
+            elif handler == 'unixgroup':
+                temp_set = unix.search(query)
             elif handler == 'none':
                 temp_set = none.search(query)
             else:
