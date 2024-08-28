@@ -20,15 +20,15 @@ Synchronizes the entitlements in SUKAT with the desired state from entmap.conf.
 ```
 usage: update-entitlements.py [-h] [--dry-run] [--debug]
                               [--only-add | --only-remove]
-                              [<entitlement> [<entitlement> ...]]
+                              [<entitlement> ...]
 
 Update entitlements in SUKAT according to entmap.conf.
 
 positional arguments:
-  <entitlement>  If present, only act on these entitlements. If none present,
+  <entitlement>  If present, only act on these entitlements. If not present,
                  act on all entitlements.
 
-optional arguments:
+options:
   -h, --help     show this help message and exit
   --dry-run      Don't make any changes, only print what would be done.
   --debug        Show extra output for debug purposes.
@@ -51,12 +51,12 @@ usage: manage-entitlements.py [--entmap-update]
 
 Manage entitlements in SUKAT
 
-Positional arguments:
+positional arguments:
   <username>            The user(s) to be acted upon. If no users given, read
                         users from stdin.
 
-Options:
-  -h, --help            Show this help message and exit.
+options:
+  -h, --help            show this help message and exit
   --add [<entitlement> ...], -a [<entitlement> ...]
                         Add one or more entitlements to the given user(s). Can
                         be specified multiple times.
@@ -64,7 +64,6 @@ Options:
                         Delete one or more entitlements from the given users(s).
                         Can be specified multiple times.
   --entmap-update       Update entmap.conf to reflect the changes made.
-
 ```
 
 (Due to a quirk in argparse, the help message printed when the program is run
