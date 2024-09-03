@@ -1,10 +1,16 @@
-dsv-user:staff              = ldap:(memberOf=cn=dsv-staff,dc=dsv,dc=su,dc=se)
-dsv-user:student            = daisy:students
-dsv-user:student	    = user:tdsv
+# Grant entitlement based on ldap group.
+dsv-user:staff           = ldap:(memberOf=cn=dsv-staff,dc=dsv,dc=su,dc=se)
 
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=english-staff,dc=english,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=philosophy-staff,dc=philosophy,dc=su,dc=se)
-dsv-user:play:sprak-staff   = ldap:(memberOf=cn=historia-staff,dc=historia,dc=su,dc=se)
+# Grant entitlement based on unix group. Only users with the admins group but
+# not the testusers group will be added. The user Administrator will
+# also be excluded.
+dsv-user:admin           = unixgroup:admins
+dsv-user:admin           = !unixgroup:testusers
+dsv-user:admin           = !user:Administrator
 
-# Nobody should have this:
-dsv-user:old-entitlement    = none
+# Grant entitlement based on daisy student status, along with some extra users.
+dsv-user:student         = daisy:students
+dsv-user:student         = user:tdsv
+
+# Revoke this entitlement for everyone
+dsv-user:old-entitlement = none

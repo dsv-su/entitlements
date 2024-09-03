@@ -79,6 +79,8 @@ comment, it will disappear as well.
 
 ## entmap.conf
 
+See also ```entmap.conf.example```.
+
 This file lists all entitlement mappings for update-entitlements.py
 to maintain. If an entitlement doesn't occur at all in the file,
 update-entitlements.py will not touch it.
@@ -94,13 +96,15 @@ Each non-comment should match the following format:
  * ```entitlement``` - An entitlement. Will be concatenated with the value of
    ```entitlement_base``` in config.ini. The same entitlement may be specified
    several times with different handler/query combinations.
+
  * ```handler``` - The facility to be used to process ```query```.
+
+   If a handler is prefixed with ```!```, the resulting set of users will be
+   excluded from the given entitlement. This exclusion has precedence over all
+   inclusion mechanisms.
+
  * ```query``` - A handler-dependent description of who should be
    granted the entitlement.
-
-If a handler is prefixed with ```!```, the resulting set of users will be
-excluded from the given entitlement. This exclusion has precedence over all
-inclusion mechanisms.
 
 There are five handlers:
  * ```ldap``` - Takes an LDAP search string as a query. The query should
