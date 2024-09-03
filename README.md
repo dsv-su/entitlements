@@ -95,10 +95,11 @@ Each non-comment should match the following format:
 
  * ```entitlement``` - An entitlement. Will be concatenated with the value of
    ```entitlement_base``` in config.ini. The same entitlement may be specified
-   several times with different handler/query combinations.
+   several times with different handler/query combinations.  
+   Depending on the environments, there will be restrictions on what
+   entitlement names are considered valid.
 
- * ```handler``` - The facility to be used to process ```query```.
-
+ * ```handler``` - The facility to be used to process ```query```.  
    If a handler is prefixed with ```!```, the resulting set of users will be
    excluded from the given entitlement. This exclusion has precedence over all
    inclusion mechanisms.
