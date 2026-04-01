@@ -2,6 +2,7 @@ import fileinput
 from shutil import copyfile
 import re
 
+
 class EntmapHandler:
     def __init__(self, mapfile):
         self.mapfile = mapfile

@@ -1,7 +1,9 @@
-import requests
-from requests_kerberos import HTTPKerberosAuth
 from subprocess import call
 import os
+
+import requests
+from requests_kerberos import HTTPKerberosAuth
+
 
 class EntitlementHandler:
     def __init__(self, conf):

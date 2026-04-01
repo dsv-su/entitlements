@@ -16,6 +16,7 @@ from handlers.NoneHandler import NoneHandler
 from util.EntitlementHandler import EntitlementHandler
 from util.EntmapHandler import EntmapHandler
 
+
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 
 mainhelp = 'Update entitlements in SUKAT according to entmap.conf.'

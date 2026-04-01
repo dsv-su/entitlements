@@ -1,6 +1,9 @@
-from handlers.Handler import Handler
-import requests
 from datetime import datetime
+
+import requests
+
+from handlers.Handler import Handler
+
 
 class DaisyHandler(Handler):
     def __init__(self, config):

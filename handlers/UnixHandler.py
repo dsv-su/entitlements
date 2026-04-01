@@ -2,6 +2,7 @@ import re
 
 from handlers.Handler import Handler
 
+
 class UnixHandler(Handler):
     def __init__(self, conf):
         self.passwdfile = conf['passwd_file']

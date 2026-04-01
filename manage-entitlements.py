@@ -9,6 +9,7 @@ import sys
 from util.EntitlementHandler import EntitlementHandler
 from util.EntmapHandler import EntmapHandler
 
+
 scriptpath = dirname(realpath(abspath(getsourcefile(lambda:0))))
 config = configparser.ConfigParser()
 config.read(scriptpath + '/config.ini')

@@ -1,5 +1,7 @@
-from handlers.Handler import Handler
 from ldap3 import Server, Connection
+
+from handlers.Handler import Handler
+
 
 class LdapHandler(Handler):
     def __init__(self, conf):
