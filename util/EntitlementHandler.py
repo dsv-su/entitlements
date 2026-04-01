@@ -15,13 +15,13 @@ class EntitlementHandler:
                 self.url = conf['url'].rstrip('/')
                 self.session = requests.Session()
                 self.session.auth = HTTPKerberosAuth()
-            
+
             def __enter__(self):
                 os.environ['KRB5CCNAME'] = self.cache
                 call(['kinit', '-t', self.key, self.princ])
                 self.active = True
                 return self
-            
+
             def __exit__(self, exc_type, exc_value, traceback):
                 call(['kdestroy'])
                 del os.environ['KRB5CCNAME']
@@ -40,7 +40,7 @@ class EntitlementHandler:
 
             def add(self, entitlement, user):
                 return self.__update('PUT', user, entitlement)
-            
+
             def remove(self, entitlement, user):
                 return self.__update('DELETE', user, entitlement)
 
@@ -49,7 +49,7 @@ class EntitlementHandler:
                 r = self.session.get(path)
                 r.raise_for_status()
                 return r.json()['entitlements']
-    
+
         self.requestor = Requestor(conf)
 
     def open(self):
